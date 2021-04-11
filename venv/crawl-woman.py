@@ -1,4 +1,3 @@
-import csv
 
 from selenium import webdriver
 from time import sleep
@@ -13,10 +12,6 @@ import pandas as pd
 import numpy as np
 
 import os
-
-
-
-
 class Crawler:
 
     def __init__(self):
@@ -35,7 +30,7 @@ class Crawler:
         txtPass.send_keys(Keys.ENTER)
 
     def readUid(self):
-        data = pd.read_csv('uid/uid2.csv')
+        data = pd.read_csv('uid.csv')
         data['uid'] = data['uid'].astype(str)
         newdata = []
         for data in data['uid']:
@@ -44,56 +39,34 @@ class Crawler:
 
         return newdata
 
-    def savePhoto(self, uids):
+    def savePhoto(self):
 
         for uid in uids:
-
-            #self.browser.get('https://www.facebook.com/groups/698980760870684/user/' + uid)
-            self.browser.get('https://www.facebook.com/' + uid+'/photos')
+            sleep(4)
+            self.browser.get('https://www.facebook.com/groups/cutegirlvietnam/media')
             for i in range(5):
                 self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 sleep(2)
             elements = self.browser.find_elements_by_tag_name('img')
-            avt = self.browser.find_elements_by_tag_name('image')
-            for a in avt:
-                src = a.get_attribute('xlink:href')
-                reponse = requests.get(src)
-
-                with open(f"img-test/avatar-{uid}.jpg", "wb") as file:
-                    file.write(reponse.content)
-                    print(src)
-                    img_src = f"img-test/avatar-{uid}.jpg"
-                    print(img_src)
-                image = face_recognition.load_image_file(img_src)
-                face_locations = face_recognition.face_locations(image)
-                print("=============face===============")
-                print(face_locations)
-                if len(face_locations) == 0:
-                    os.remove(f"img-test/avatar-{uid}.jpg")
-                    print('remove')
-                else:
-                    break
             count = 0
             try:
                 for e in elements:
                     src = e.get_attribute('src')
                     reponse = requests.get(src)
-                    if count > 4:
-                        break
-                    with open(f"img-test/{count}-{uid}.jpg", "wb") as file:
+
+                    with open(f"images-wonman/{count}.jpg", "wb") as file:
                         file.write(reponse.content)
                         print(src)
-                        img_src = f"img-test/{count}-{uid}.jpg"
+                        img_src = f"images-wonman/{count}.jpg"
                         print(img_src)
                     image = face_recognition.load_image_file(img_src)
                     face_locations = face_recognition.face_locations(image)
                     print("=============face===============")
                     print(face_locations)
                     if len(face_locations) == 0:
-                        os.remove(f"img-test/{count}-{uid}.jpg")
+                        os.remove(f"images-wonman/{count}.jpg")
                         print('remove')
-                    else:
-                        count += 1
+                    count += 1
                     write_last_uid(uid)
                 uids.remove(uid)
                 rewrite_csv(uids)
@@ -103,28 +76,6 @@ class Crawler:
                 continue
         self.browser.close()
 
-def save_avatar(self, uid):
-    self.browser.get('https://www.facebook.com/media/set/?set=a.' + uid + '&type=3')
-    elements = self.browser.find_elements_by_tag_name('img')
-
-    for e in elements:
-        src = e.get_attribute('src')
-        reponse = requests.get(src)
-
-        with open(f"img-test/avatar-{uid}.jpg", "wb") as file:
-            file.write(reponse.content)
-            print(src)
-            img_src = f"img-test/avatar-{uid}.jpg"
-            print(img_src)
-        # image = face_recognition.load_image_file(img_src)
-        # face_locations = face_recognition.face_locations(image)
-        # print("=============face===============")
-        # print(face_locations)
-        # if len(face_locations) == 0:
-        #     os.remove(f"img-test/avatar-{uid}.jpg")
-        #     print('remove')
-        # else:
-        #     break
 
 def read_last_uid():
     f = open("last_uid.txt", "r")
@@ -141,7 +92,7 @@ def write_last_uid(uid):
     with open("last_uid.txt", "a") as file:
         file.write(uid)
 def rewrite_csv(uids):
-    with open('uid/uid-female.csv', 'w') as csvfile:
+    with open('uid.csv', 'w') as csvfile:
         # creating a csv writer object
         csvwriter = csv.writer(csvfile)
 
